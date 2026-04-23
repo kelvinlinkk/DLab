@@ -1,6 +1,7 @@
-module bounce_sequence (
+module cntr_ds (
     input           sys_clk,
     input           sys_rst_n,
+    input dir,
 
     output          CA,
     output          CB,
@@ -16,6 +17,7 @@ module bounce_sequence (
 );
 
 wire [3:0]  cnt_out;
+wire [3:0] cvtr_out;
 wire        isReset_wire;
 wire        div_1s_wire;
 wire        cntr_rst_n; 
@@ -37,9 +39,14 @@ reset_dtct reset_dtct_0 (
     .digit_in(cnt_out),        
     .isReset(isReset_wire)
 );
+cvtr_4bit cvtr_4bit_0(
+    .digit_in(cnt_out),
+    .dir(dir),
+    .digit_out(cvtr_out)
+);
 
 svn_dcdr svn_dcdr_0 (
-    .in(cnt_out),      
+    .in(cvtr_out),      
     .dp_in(1'b0),   
     .AN_in(8'hFE),   
     .CA(CA),

@@ -21,9 +21,6 @@ module tb_adder_4bit_all;
         b = 4'b0000;
         error_count = 0;
 
-        $display("開始測試所有 256 種組合...");
-        $display("Time\t| a    + b    | cout s    | (十進位結果)");
-        $display("-------------------------------------------------");
 
         for (i = 0; i < 16; i = i + 1) begin
             for (j = 0; j < 16; j = j + 1) begin
@@ -43,13 +40,6 @@ module tb_adder_4bit_all;
                 end
                 
             end
-        end
-
-        $display("-------------------------------------------------");
-        if (error_count == 0) begin
-            $display("測試完成！所有 256 種組合皆正確無誤。");
-        end else begin
-            $display("測試結束。共發現 %d 個錯誤！", error_count);
         end
 
         $finish;
