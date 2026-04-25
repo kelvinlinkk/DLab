@@ -27,7 +27,7 @@ module tb_cntr_ds;
     defparam uut.cntr_4bit_0.CNT_1S_MAX = 30'd10;
     initial begin
         sys_clk = 0;
-        forever #1 sys_clk = ~sys_clk;
+        forever #5 sys_clk = ~sys_clk;
     end
 
     initial begin
