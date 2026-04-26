@@ -26,7 +26,7 @@ reset_dtct reset_dtct_0(
 );
 
 assign an_out = ~(8'b00000001 << cnt_out);
-assign out = (cnt_out==4'h0)?(in%4'ha):
-                (cnt_out==4'h1&& in>4'h9)?(1):
+assign out = (cnt_out==5'h0)?(in%5'ha):
+                (cnt_out==5'h1&& in>5'h9)?(1):
                 (4'hf);
 endmodule

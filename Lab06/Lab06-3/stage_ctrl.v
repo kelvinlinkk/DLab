@@ -3,15 +3,14 @@ module stage_ctrl (
     input sys_rst_n,
     input btn_stage,
     input [3:0] map,
-    output[4:0] sum,
+    output[3:0] reg_out_0,
+    output[3:0] reg_out_1,
     output reg [3:0] stage
   );
 
   wire [3:0]  cnt_out; 
   reg [3:0]  reg_in_0; 
   reg [3:0]  reg_in_1;
-  wire [3:0]  reg_out_0; 
-  wire [3:0]  reg_out_1;
   wire [3:0]  reg_out_2;  
   wire rst_wire;
 
@@ -50,7 +49,6 @@ reg_ckt reg_stage (
     .reg_in(stage),
     .reg_out(reg_out_2)
 );
-assign sum=reg_out_0+reg_out_1;
 always @(posedge btn_stage or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
         reg_in_0<=4'hf;

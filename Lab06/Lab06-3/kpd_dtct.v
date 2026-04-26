@@ -26,7 +26,8 @@ module kpd_dtct (
   wire [3:0] stage;    
   wire [7:0] an_wire;  
   wire [4:0] svn_ds;
-  wire [4:0]  sum;
+  wire [3:0]  d0;
+  wire [3:0]  d1;
   wire rst_wire;
   wire  isclick;
 stage_ctrl stage_ctrl_0(
@@ -34,7 +35,8 @@ stage_ctrl stage_ctrl_0(
     .sys_rst_n(sys_rst_n),
     .btn_stage(btn_stage),
     .map(map),
-    .sum(sum),
+    .reg_out_0(d0),
+    .reg_out_1(d1),
     .stage(stage)
   );
 cntr_4bit cntr_4bit_0 (
@@ -75,10 +77,10 @@ svn_dcdr svn_dcdr_0 (
     .an_out(an_wire),
     .out(out)
 ); 
-assign svn_ds=  (stage == 4'h0)?(map):
-                (stage == 4'h1)?(map):
-                (stage == 4'h2)?(sum):
-                (map);
+assign svn_ds=  (stage == 4'h0)?({4'b0,map}):
+                (stage == 4'h1)?({4'b0,map}):
+                (stage == 4'h2)?({4'b0,d0}+{4'b0,d1}):
+                ({4'b0,map});
 assign {A,B,C,D} =
            (cnt_out==4'h0)?(4'h1):
            (cnt_out==4'h1)?(4'h2):
