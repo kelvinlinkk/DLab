@@ -1,4 +1,3 @@
-// include half_adder
 module full_adder(
     input   a,
     input   b,
@@ -7,9 +6,9 @@ module full_adder(
     output  cout
 );
 
-wire s1;    // 1st stage HA sum
-wire c1;    // 1st stage HA carry
-wire c2;    // 2nd stage HA carry
+wire s1;    
+wire c1;    
+wire c2;   
 
 half_adder ha1(
     .a      (a),

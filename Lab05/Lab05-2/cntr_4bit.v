@@ -1,7 +1,7 @@
 module cntr_4bit(
     input sys_clk,
     input sys_rst_n,
-    input isUP,  // 1: count up; 0: count down
+    input isUP,  
 
     output div_1s,
     output [3:0] out

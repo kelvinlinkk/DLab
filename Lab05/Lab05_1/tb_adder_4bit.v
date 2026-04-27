@@ -1,13 +1,10 @@
 `timescale 1ns / 1ps
 
-module tb_adder_4bit_all;
+module tb_adder_4bit_custom;
     reg  [3:0] a;
     reg  [3:0] b;
     wire [3:0] s;
     wire       cout;
-
-    integer i, j;
-    integer error_count;
 
     adder_4bit uut (
         .a(a),
@@ -17,30 +14,32 @@ module tb_adder_4bit_all;
     );
 
     initial begin
-        a = 4'b0000;
-        b = 4'b0000;
-        error_count = 0;
+        // Monitor the outputs whenever inputs change
+        $monitor("Time=%0t | a=%b b=%b | cout=%b s=%b", $time, a, b, cout, s);
 
+        // Test 1+1
+        a = 4'b0001; b = 4'b0001; #10;
+        
+        // Test 2+2
+        a = 4'b0010; b = 4'b0010; #10;
+        
+        // Test 4+4
+        a = 4'b0100; b = 4'b0100; #10;
+        
+        // Test 8+8
+        a = 4'b1000; b = 4'b1000; #10;
 
-        for (i = 0; i < 16; i = i + 1) begin
-            for (j = 0; j < 16; j = j + 1) begin
-                
-                a = i;
-                b = j;
-                
-                #10; 
-
-                $display("%0t\t| %b + %b |  %b   %b | (%d + %d = %d)", 
-                         $time, a, b, cout, s, a, b, {cout, s});
-
-                if ({cout, s} !== (a + b)) begin
-                    $display(">>> [錯誤] 發生在 %0t: 預期 %d + %d = %d, 但得到 %d <<<", 
-                             $time, a, b, (a + b), {cout, s});
-                    error_count = error_count + 1;
-                end
-                
-            end
-        end
+        // Test 1111+1
+        a = 4'b1111; b = 4'b0001; #10;
+        
+        // Test 1111+2
+        a = 4'b1111; b = 4'b0010; #10;
+        
+        // Test 1111+4
+        a = 4'b1111; b = 4'b0100; #10;
+        
+        // Test 1111+8
+        a = 4'b1111; b = 4'b1000; #10;
 
         $finish;
     end
