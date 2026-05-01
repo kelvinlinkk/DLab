@@ -34,7 +34,7 @@ reset_dtct reset_dtct_0(
     .sys_clk(sys_clk),
     .sys_rst_n(sys_rst_n),
     .digit_in(cnt_out),
-    .bdry(4'h9),
+    .bdry(4'ha),
     .isReset(rst_wire)
 ); 
 

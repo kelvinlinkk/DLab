@@ -12,7 +12,7 @@ cntr_4bit cntr_4bit_0 (
                    .sys_clk(sys_clk),
                    .sys_rst_n(sys_rst_n & (~rst_wire)),
                    .isUP(1'b1),
-                   .CNT_1S_MAX(30'd10000),
+                   .CNT_1S_MAX(30'd1000000),
                    .div_1s(),
                    .out(cnt_out)
                  );

@@ -17,15 +17,15 @@ module kpd_dtct (
     output          CG,
     output          DP,
     output  [7:0]   AN
-  );
+);
 
   wire [3:0]  cnt_out;
   wire [3:0]  out;      
   wire [7:0]  AN_in;    
-  reg  [3:0]  map;      
+  wire [3:0]  map;       // ★ 注意：這裡因為要接外部模組的輸出，已改為 wire
   wire [3:0]  reg_out; 
   wire rst_wire;
-  wire  isclick;
+  wire isclick;
 
 cntr_4bit cntr_4bit_0 (
     .sys_clk(sys_clk),
@@ -35,7 +35,6 @@ cntr_4bit cntr_4bit_0 (
     .div_1s(),
     .out(cnt_out)
 );  
-
 
 reset_dtct reset_dtct_0(
     .sys_clk(sys_clk),
@@ -73,25 +72,18 @@ assign {A,B,C,D} =
            (cnt_out==4'h2)?(4'h4):
            (cnt_out==4'h3)?(4'h8):
            (4'd8);
-assign isclick=E|F|G;
-always @(posedge isclick or negedge sys_rst_n) begin
-    if (!sys_rst_n) begin
-        map <= 4'hf;
-    end else begin
-        if      ((cnt_out == 4'h0) && G) map <= 4'h1; 
-        else if ((cnt_out == 4'h0) && F) map <= 4'h2; 
-        else if ((cnt_out == 4'h0) && E) map <= 4'h3; 
-        else if ((cnt_out == 4'h1) && G) map <= 4'h4; 
-        else if ((cnt_out == 4'h1) && F) map <= 4'h5; 
-        else if ((cnt_out == 4'h1) && E) map <= 4'h6; 
-        else if ((cnt_out == 4'h2) && G) map <= 4'h7; 
-        else if ((cnt_out == 4'h2) && F) map <= 4'h8; 
-        else if ((cnt_out == 4'h2) && E) map <= 4'h9; 
-        else if ((cnt_out == 4'h3) && G) map <= 4'hc; 
-        else if ((cnt_out == 4'h3) && F) map <= 4'h0; 
-        else if ((cnt_out == 4'h3) && E) map <= 4'hb; 
-        else                             map <= 4'hf;
-    end
-end
+
+assign isclick = E | F | G;
+
+// ★ 實例化鍵盤解碼模組，取代原本的 always block
+kpd_decoder kpd_decoder_0 (
+    .isclick(isclick),
+    .sys_rst_n(sys_rst_n),
+    .cnt_out(cnt_out),
+    .E(E),
+    .F(F),
+    .G(G),
+    .map(map)
+);
 
 endmodule
