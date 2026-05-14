@@ -1,91 +1,100 @@
 `timescale 1ns / 1ps
 
-module tb_kpd_dtct();
+module tb_kpd_dtct;
 
-    // 輸入訊號 (暫存器型態)
+    // Inputs
     reg sys_clk;
     reg sys_rst_n;
-    reg btn_stage;
-    reg E;
-    reg F;
-    reg G;
+    reg next;
+    reg previous;
 
-    // 輸出訊號 (線路型態)
-    wire A;
-    wire B;
-    wire C;
-    wire D;
+    // Outputs
     wire CA, CB, CC, CD, CE, CF, CG, DP;
     wire [7:0] AN;
 
-    // 實例化待測物 (Unit Under Test, UUT)
+    // Instantiate the Unit Under Test (UUT)
     kpd_dtct uut (
-        .sys_clk(sys_clk),
-        .sys_rst_n(sys_rst_n),
-        .btn_stage(btn_stage),
-        .E(E),
-        .F(F),
-        .G(G),
-        .A(A),
-        .B(B),
-        .C(C),
-        .D(D),
-        .CA(CA),
-        .CB(CB),
-        .CC(CC),
-        .CD(CD),
-        .CE(CE),
-        .CF(CF),
-        .CG(CG),
-        .DP(DP),
+        .sys_clk(sys_clk), 
+        .sys_rst_n(sys_rst_n), 
+        .next(next), 
+        .previous(previous), 
+        .CA(CA), 
+        .CB(CB), 
+        .CC(CC), 
+        .CD(CD), 
+        .CE(CE), 
+        .CF(CF), 
+        .CG(CG), 
+        .DP(DP), 
         .AN(AN)
     );
 
-    // 產生時脈訊號 (100MHz，週期 10ns)
+    // 100MHz System Clock Generation (10ns period)
+    always #5 sys_clk = ~sys_clk;
+
+    // --- Virtual Button Press Tasks ---
+    // These tasks simulate a human pressing a button. 
+    // They hold the button high for 50 microseconds, then release it.
+    task press_next;
+        begin
+            next = 1'b1;
+            #50000; 
+            next = 1'b0;
+            #50000; 
+        end
+    endtask
+
+    task press_previous;
+        begin
+            previous = 1'b1;
+            #50000;
+            previous = 1'b0;
+            #50000;
+        end
+    endtask
+
     initial begin
+        // --- Initialization ---
         sys_clk = 0;
-        forever #5 sys_clk = ~sys_clk; 
-    end
-
-    // 模擬情境
-    initial begin
-        // 1. 初始化輸入
         sys_rst_n = 0;
-        btn_stage = 0;
-        E = 0; F = 0; G = 0;
+        next = 0;
+        previous = 0;
 
-        // 2. 解除系統重置
+        $display("Starting Up/Down Counter Simulation...");
+
+        // Wait 100 ns for global reset to finish, then release
         #100;
         sys_rst_n = 1;
-
-        // 等待一段時間讓內部計數器穩定
         #1000;
 
-        // 3. 模擬第一次按鍵輸入 (假設掃描到對應狀態時，G 收到訊號)
-        G = 1;
-        #500; // 按壓維持一段時間
-        G = 0;
+        // --- Test 1: Increment ---
+        // Verify it counts up normally (0 -> 1 -> 2 -> 3)
+        $display("[%0t] Testing Increment (Next button)", $time);
+        press_next(); 
+        press_next(); 
+        press_next(); 
 
-        // 4. 切換到下一個狀態 (按下 btn_stage)
-        #500;
-        btn_stage = 1;
-        #200;
-        btn_stage = 0;
+        // --- Test 2: Decrement ---
+        // Verify it counts down normally (3 -> 2 -> 1)
+        $display("[%0t] Testing Decrement (Previous button)", $time);
+        press_previous(); 
+        press_previous(); 
 
-        // 5. 模擬第二次按鍵輸入 (假設 F 收到訊號)
-        #1000;
-        F = 1;
-        #500;
-        F = 0;
+        // --- Test 3: Underflow Check ---
+        // Verify 0 wraps backwards to 15 (0xF)
+        $display("[%0t] Testing Underflow (0 -> 15)", $time);
+        press_previous(); // 1 -> 0
+        press_previous(); // 0 -> 15
 
-        // 6. 切換到加法結果顯示狀態
-        #500;
-        btn_stage = 1;
-        #200;
-        btn_stage = 0;
+        // --- Test 4: Overflow Check ---
+        // Verify 15 wraps forwards to 0
+        $display("[%0t] Testing Overflow (15 -> 0)", $time);
+        press_next();     // 15 -> 0
 
-        // 觀察一段時間後結束模擬
-        #2000;
+        // Allow some time to observe final state
+        #10000;
+        
+        $display("[%0t] Simulation Finished.", $time);
         $finish;
     end
 
